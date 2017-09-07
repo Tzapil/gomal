@@ -9,8 +9,8 @@ type Answer struct {
 
 type Update struct {
 	Id int32 `json:"update_id"`
-	Message Message `json:"message"`
-	InlineQuery InlineQuery `json:"inline_query"`
+	Message *Message `json:"message"`
+	InlineQuery *InlineQuery `json:"inline_query"`
 }
 
 type User struct {
@@ -29,18 +29,18 @@ type Chat struct {
 
 type Message struct {
 	Id int32 `json:"id"`
-	From User `json:"from"`
+	From *User `json:"from"`
 	// unix time
 	Date int32 `json:"date"`
 	Text string `json:"text"`
-	Chat Chat `json:"chat"`
+	Chat *Chat `json:"chat"`
 	ReplyToMessage string `json:"reply_to_message"`
 }
 
 type CallbackQuery struct {
 	Id string `json:"id"`
-	From User `json:"from"`
-	Message Message `json:"message"`
+	From *User `json:"from"`
+	Message *Message `json:"message"`
 	InlineMessageId string `json:"inline_message_id"`
 	ChatInstance string `json:"chat_instance"`
 	Data string `json:"data"`
@@ -49,7 +49,7 @@ type CallbackQuery struct {
 
 type InlineQuery struct {
 	Id string `json:"id"`
-	From User `json:"from"`
+	From *User `json:"from"`
 	Query string `json:"query"`
 	Offset string `json:"offset"`
 }
@@ -69,5 +69,5 @@ type InlineQueryResultArticle struct {
 	Id string `json:"id"`
 	Title string `json:"title"`
 	Description string `json:"description"`
-	InputMessageContent InputTextMessageContent `json:"input_message_content"`
+	InputMessageContent *InputTextMessageContent `json:"input_message_content"`
 }

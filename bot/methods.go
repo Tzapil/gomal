@@ -3,7 +3,7 @@ package bot
 import "github.com/google/uuid"
 
 func CreateResultArticle(title, message_text, description, parse_mode string) *InlineQueryResultArticle {
-	input_message_content := InputTextMessageContent{Text: message_text, ParseMode: parse_mode}
+	input_message_content := &InputTextMessageContent{Text: message_text, ParseMode: parse_mode}
 
 	uuid := uuid.Must(uuid.NewRandom()).String()
 

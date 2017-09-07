@@ -3,6 +3,7 @@ package main
 import (
     "log"
     "fmt"
+    "time"
     // "bytes"
     "strings"
     // "io"
@@ -27,8 +28,7 @@ const bot_id = "285037035:AAEXfDvpfvAgpRaRKjBxGIQSwZU9Vn_sP5c"
 
 const myanimelist_api = "http://myanimelist.net/malappinfo.php"
 
-func get_anime() *x.Xml {
-    user := "Tzapil"
+func get_anime(user string) *x.Xml {
     params := []string{"u=" + user, "status=all", "type=anime"}
     resp, err_get := http.Get(myanimelist_api + "?" + strings.Join(params, "&"))
     if err_get != nil {
@@ -78,17 +78,20 @@ func get_anime() *x.Xml {
 //     return e.Parse(z)
 // }
 
-type User struct {
+func getMaxOffset(updates []b.Update) int32 {
+    var result int32 = 0
 
-}
+    for i := 0; i < len(updates); i++ {
+        if updates[i].Id > result {
+            result = updates[i].Id
+        }
+    }
 
-type CallbackQuery struct {
-    id string
-    from string
+    return result
 }
 
 func main() {
-    animes := get_anime()
+    animes := get_anime("Tzapil")
     if animes != nil {
         // TODO handle
         fmt.Println(animes)
@@ -98,7 +101,64 @@ func main() {
     r2 := b.CreateAnswerInlineQuery("cococo", r1)
     fmt.Println(r2)
 
-    b.GetUpdates(bot_id)
+    var maxOffset int32 = -1
+    for {
+        updates, err := b.GetUpdates(bot_id, maxOffset + 1)
+        if err != nil {
+            log.Printf("Error caught while taking updates\n%s\n", err.Error())
+            continue
+        }
+        fmt.Println("UPDATED")
+        fmt.Println(len(updates))
+
+        for i := 0; i < len(updates); i++ {
+            u := updates[i]
+            if u.InlineQuery != nil {
+                // parse request
+                query := strings.Trim(u.InlineQuery.Query, "")
+                parts := strings.Split(query, " ")
+                var user string = ""
+                var anime string = ""
+                switch len(parts) {
+                    case 0: 
+                        continue
+                    case 1:
+                        user = parts[0]
+                    default:
+                        user = parts[0]
+                        anime = parts[1]
+                }
+
+                animes := get_anime(user)
+                
+                s := []b.InlineQueryResultArticle{}
+                for j := 0; j < len(animes.Anime); j++ {
+                    a := animes.Anime[j]
+                    if !strings.Contains(strings.ToLower(a.Title), strings.ToLower(anime)) {
+                        continue
+                    }
+                    message := "User: " + animes.User.Name + "\n" +
+                        "<b>" + a.Title + "</b> " +
+                        a.Watched + "/" + a.Episodes + "\n" +
+                        "Status: " + a.Status + "\n" +
+                        "Score: " + a.Score + "\n" +
+                        "https://myanimelist.net/anime/" + a.Id
+                    
+                    s = append(s, *b.CreateResultArticle(a.Title, message, "", "HTML"))
+                }
+
+                b.SendAnswerInlineQuery(bot_id, u.InlineQuery.Id, s)
+            }
+        }
+
+        next := getMaxOffset(updates)
+        if next > maxOffset {
+            maxOffset = next
+        }
+
+        time.Sleep(time.Second)
+    }
+
     // Create handlers
     // handler := func (w http.ResponseWriter, r *http.Request) {
     //     anime_id := r.FormValue("id")

@@ -1,18 +1,19 @@
 package bot
 
 import (
-	"fmt"
+	"strconv"
+	"errors"
 	"log"
 	"net/http"
 	"encoding/json"
 )
 
-func GetUpdates(token string) {
-	url := BaseUrl + token + "/getUpdates"
+func GetUpdates(token string, offset int32) (result []Update, err error) {
+	url := BaseUrl + token + "/getUpdates?offset=" + strconv.Itoa(int(offset))
 	resp, err_get := http.Get(url)
     if err_get != nil {
         log.Printf("Error caught while taking updates for bot: %s\n%s\n", token, err_get.Error())
-        return
+        return nil, err_get
     }
 
     // wait until conection and all transactions closed
@@ -23,8 +24,12 @@ func GetUpdates(token string) {
 
     if (err_read != nil) {
         log.Printf("Error caught while taking updates for bot: %s\n%s\n", token, err_read.Error())
-        return
+        return nil, err_read
+	}
+
+	if updates.Success {
+		return updates.Result, nil
 	}
 	
-	fmt.Println(updates)
+	return nil, errors.New("Telegram service error")
 }

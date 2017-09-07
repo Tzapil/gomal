@@ -12,6 +12,8 @@ type XmlAnime struct {
     Type string `xml:"series_type"`
     Episodes string `xml:"series_episodes"`
     Status string `xml:"series_status"`
+    Watched string `xml:"my_watched_episodes"`
+    Score string `xml:"my_score"`
     Start string `xml:"series_start"`
     End string `xml:"series_end"`
 }
@@ -28,7 +30,7 @@ type XmlUser struct {
 }
 
 type Xml struct {
-    User XmlUser `xml:"myinfo"`
+    User *XmlUser `xml:"myinfo"`
     Anime []XmlAnime `xml:"anime"`
 }
 
