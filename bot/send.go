@@ -1,9 +1,9 @@
 package bot
 
 import (
-	"net/http"
 	"bytes"
 	"encoding/json"
+	"net/http"
 )
 
 func SendAnswerInlineQuery(token string, inline_query_id string, results []InlineQueryResultArticle) {
@@ -13,6 +13,6 @@ func SendAnswerInlineQuery(token string, inline_query_id string, results []Inlin
 
 	b := new(bytes.Buffer)
 	json.NewEncoder(b).Encode(s)
-	
+
 	http.Post(url, "application/json; charset=utf-8", b)
 }

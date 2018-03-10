@@ -1,33 +1,33 @@
 package bot
 
 import (
-	"fmt"
-	"net/http"
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"net/http"
 )
 
 type Webhook struct {
-	Url string `json:"url"`
-	Certificate string `json:"certificate,omitempty"`
-	MaxConnections int32 `json:"max_connections,omitempty"`
+	URL            string   `json:"url"`
+	Certificate    string   `json:"certificate,omitempty"`
+	MaxConnections int32    `json:"max_connections,omitempty"`
 	AllowedUpdates []string `json:"allowed_updates,omitempty"`
 }
 
 func SetWebhook(token string, url string) {
-	send_url := BaseUrl + token + "/setWebhook"
+	sendURL := BaseUrl + token + "/setWebhook"
 
 	s := Webhook{
-		Url: url,
+		URL: url,
 	}
 
 	b := new(bytes.Buffer)
 	json.NewEncoder(b).Encode(s)
 
-	fmt.Println(send_url)
+	fmt.Println(sendURL)
 	fmt.Println(b)
-	
-	http.Post(send_url, "application/json; charset=utf-8", b)
+
+	http.Post(sendURL, "application/json; charset=utf-8", b)
 }
 
 func RemoveWebhook(token string) {

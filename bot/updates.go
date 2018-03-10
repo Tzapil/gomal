@@ -1,35 +1,35 @@
 package bot
 
 import (
-	"strconv"
+	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
-	"encoding/json"
+	"strconv"
 )
 
 func GetUpdates(token string, offset int32) (result []Update, err error) {
 	url := BaseUrl + token + "/getUpdates?offset=" + strconv.Itoa(int(offset))
-	resp, err_get := http.Get(url)
-    if err_get != nil {
-        log.Printf("Error caught while taking updates for bot: %s\n%s\n", token, err_get.Error())
-        return nil, err_get
-    }
+	resp, errGet := http.Get(url)
+	if errGet != nil {
+		log.Printf("Error caught while taking updates for bot: %s\n%s\n", token, errGet.Error())
+		return nil, errGet
+	}
 
-    // wait until conection and all transactions closed
-    defer resp.Body.Close()
+	// wait until conection and all transactions closed
+	defer resp.Body.Close()
 
 	var updates Answer
-    err_read := json.NewDecoder(resp.Body).Decode(&updates)
+	errRead := json.NewDecoder(resp.Body).Decode(&updates)
 
-    if (err_read != nil) {
-        log.Printf("Error caught while taking updates for bot: %s\n%s\n", token, err_read.Error())
-        return nil, err_read
+	if errRead != nil {
+		log.Printf("Error caught while taking updates for bot: %s\n%s\n", token, errRead.Error())
+		return nil, errRead
 	}
 
 	if updates.Success {
 		return updates.Result, nil
 	}
-	
+
 	return nil, errors.New("Telegram service error")
 }
