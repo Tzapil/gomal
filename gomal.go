@@ -120,5 +120,5 @@ func main() {
 
 	// setup webhooks
 	http.HandleFunc("/", handler)
-	http.ListenAndServe(":7773", nil)
+	http.ListenAndServe(":8080", nil)
 }
