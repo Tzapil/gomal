@@ -17,21 +17,21 @@ const bot_id = "285037035:AAEXfDvpfvAgpRaRKjBxGIQSwZU9Vn_sP5c"
 
 const myanimelist_api = "http://myanimelist.net/malappinfo.php"
 
-func get_anime(user string) *x.Xml {
+func getAnime(user string) *x.Xml {
 	params := []string{"u=" + user, "status=all", "type=anime"}
-	resp, err_get := http.Get(myanimelist_api + "?" + strings.Join(params, "&"))
-	if err_get != nil {
-		log.Printf("Error caught while taking page for user: %s\n%s\n", user, err_get.Error())
+	resp, errGet := http.Get(myanimelist_api + "?" + strings.Join(params, "&"))
+	if errGet != nil {
+		log.Printf("Error caught while taking page for user: %s\n%s\n", user, errGet.Error())
 		return nil
 	}
 
 	// wait until conection and all transactions closed
 	defer resp.Body.Close()
 
-	body, err_read := ioutil.ReadAll(resp.Body)
+	body, errRead := ioutil.ReadAll(resp.Body)
 
-	if err_read != nil {
-		log.Printf("Error caught while taking page for user: %s\n%s\n", user, err_read.Error())
+	if errRead != nil {
+		log.Printf("Error caught while taking page for user: %s\n%s\n", user, errRead.Error())
 		return nil
 	}
 
@@ -67,7 +67,7 @@ func AnswerUpdate(u b.Update) {
 			anime = parts[1]
 		}
 
-		animes := get_anime(user)
+		animes := getAnime(user)
 
 		s := []b.InlineQueryResultArticle{}
 		for j := 0; j < len(animes.Anime); j++ {
