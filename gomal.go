@@ -52,6 +52,8 @@ func getMaxOffset(updates []b.Update) int32 {
 
 func AnswerUpdate(u b.Update) {
 	if u.InlineQuery != nil {
+		// answer
+		s := []b.InlineQueryResultArticle{}
 		// parse request
 		query := strings.Trim(u.InlineQuery.Query, "")
 		parts := strings.Split(query, " ")
@@ -68,25 +70,25 @@ func AnswerUpdate(u b.Update) {
 		}
 
 		animes := getAnime(user)
+		if animes != nil {
+			for j := 0; j < len(animes.Anime); j++ {
+				a := animes.Anime[j]
+				if !strings.Contains(strings.ToLower(a.Title), strings.ToLower(anime)) {
+					continue
+				}
+				message := "User: " + animes.User.Name + "\n" +
+					"<b>" + a.Title + "</b> " +
+					a.Watched + "/" + a.Episodes + "\n" +
+					"Status: " + a.Status + "\n" +
+					"Score: " + a.Score + "\n" +
+					"https://myanimelist.net/anime/" + a.ID
 
-		s := []b.InlineQueryResultArticle{}
-		for j := 0; j < len(animes.Anime); j++ {
-			a := animes.Anime[j]
-			if !strings.Contains(strings.ToLower(a.Title), strings.ToLower(anime)) {
-				continue
-			}
-			message := "User: " + animes.User.Name + "\n" +
-				"<b>" + a.Title + "</b> " +
-				a.Watched + "/" + a.Episodes + "\n" +
-				"Status: " + a.Status + "\n" +
-				"Score: " + a.Score + "\n" +
-				"https://myanimelist.net/anime/" + a.ID
+				s = append(s, *b.CreateResultArticle(a.Title, message, "", "HTML"))
 
-			s = append(s, *b.CreateResultArticle(a.Title, message, "", "HTML"))
-
-			// cant return more than 10 results
-			if len(s) >= 10 {
-				break
+				// cant return more than 10 results
+				if len(s) >= 10 {
+					break
+				}
 			}
 		}
 
