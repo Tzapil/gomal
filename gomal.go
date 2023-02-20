@@ -13,7 +13,7 @@ import (
 	x "github.com/tzapil/gomal/xml"
 )
 
-const bot_id = "285037035:AAEXfDvpfvAgpRaRKjBxGIQSwZU9Vn_sP5c"
+const bot_id = ""
 
 const myanimelist_api = "http://myanimelist.net/malappinfo.php"
 
